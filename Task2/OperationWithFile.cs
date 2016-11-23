@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using static System.String;
 
 namespace Task2
 {
@@ -27,7 +25,7 @@ namespace Task2
 
         public OperationWithFile(string path)
         {
-            if (String.IsNullOrEmpty(path))
+            if (IsNullOrEmpty(path))
                 throw new ArgumentException();
 
             Path = path;
@@ -40,17 +38,17 @@ namespace Task2
         /// <summary>
         /// Write books in file.
         /// </summary>
-        /// <param name="listBookForWrite">List book.</param>
+        /// <param name="books">List book.</param>
 
-        public void WriteBooks(List<Book> listBookForWrite)
+        public void WriteBooks(IEnumerable<Book> books)
         {
-            if (listBookForWrite == null)
+            if (books == null)
                 throw new ArgumentException();
 
             using (FileStream fs = new FileStream(Path, FileMode.OpenOrCreate, FileAccess.Write))
             using (BinaryWriter writer = new BinaryWriter(fs))
             {
-                foreach (Book t in listBookForWrite)
+                foreach (var t in books)
                 {
                     writer.Write(t.Author);
                     writer.Write(t.Title);
@@ -66,9 +64,9 @@ namespace Task2
         /// </summary>
         /// <returns>Books list.</returns>
 
-        public List<Book> ReadBooks()
+        public IEnumerable<Book> ReadBooks()
         {
-            List<Book> listBookForRead = new List<Book>();
+            var listBookForRead = new List<Book>();
 
             using (FileStream fs = new FileStream(Path, FileMode.OpenOrCreate, FileAccess.Read))
             using (BinaryReader reader = new BinaryReader(fs))

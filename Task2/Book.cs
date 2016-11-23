@@ -3,7 +3,7 @@ using static System.String;
 
 namespace Task2
 {
-    public class Book : IEquatable<Book>, IComparable<Book>
+    public class Book : IEquatable<Book>, IComparable<Book>, IComparable
     {
         #region Fields
 
@@ -48,11 +48,8 @@ namespace Task2
         /// <param name="other">Object of Book class</param>
         /// <returns>Equals or NotEquals</returns>
 
-        public bool Equals(Book other)
-        {
-            return Title.Equals(other?.Title) && Author.Equals(other?.Author) && Publisher.Equals(other?.Publisher) &&
-                   YearIssued == other?.YearIssued && NumberOfPages == other.NumberOfPages;
-        }
+        public bool Equals(Book other) => Title.Equals(other?.Title) && Author.Equals(other?.Author) && Publisher.Equals(other?.Publisher) &&
+                                          YearIssued == other?.YearIssued && NumberOfPages == other.NumberOfPages;
 
         /// <summary>
         /// Compare two books
@@ -60,26 +57,22 @@ namespace Task2
         /// <param name="other">Object of Book class</param>
         /// <returns>Sequence</returns>
 
-        public int CompareTo(Book other)
-        {
-            return Compare(Author, other.Author, StringComparison.Ordinal);
-        }
+        public int CompareTo(Book other) => Compare(Author, other.Author, StringComparison.Ordinal);
+
+        /// <summary>
+        /// Compare two books
+        /// </summary>
+        /// <param name="obj">Object of Book class</param>
+        /// <returns>Sequence</returns>
+
+        public int CompareTo(object obj) => CompareTo((Book) obj);
 
         /// <summary>
         /// Override ToString
         /// </summary>
         /// <returns>String of book information</returns>
 
-        public override string ToString()
-        {
-            string str = "";
-            str += "Author: " + Author + ", ";
-            str += "Title: \"" + Title + "\", ";
-            str += "Publisher: \"" + Publisher + "\", ";
-            str += NumberOfPages + ", ";
-            str += YearIssued + " ";
-            return str;
-        }
+        public override string ToString() => $"Author: {Author}, Title: \"{Title}\", Publisher: {Publisher}, {NumberOfPages}, {YearIssued}";
 
         #endregion
 

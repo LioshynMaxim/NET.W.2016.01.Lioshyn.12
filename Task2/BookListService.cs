@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.IO;
 using System.Linq;
+using static System.String;
 
 namespace Task2
 {
@@ -8,8 +11,8 @@ namespace Task2
     {
         #region Field
 
-        public List<Book> BookList { get; private set; }
-        private IBookListStorage<Book> BookListStorage { get; }
+        private List<Book> BookList { get; set; }
+        //private IBookListStorage<Book> BookListStorage { get; }
 
         #endregion
 
@@ -22,15 +25,12 @@ namespace Task2
 
         public BookListService(IBookListStorage<Book> bookListStorage)
         {
-
             if (bookListStorage == null)
                 throw new ArgumentNullException();
 
-            BookListStorage = bookListStorage;
-
             try
             {
-                BookList = BookListStorage.ReadBooks();
+                BookList = (List<Book>)bookListStorage.ReadBooks();
             }
             catch (Exception ex)
             {
@@ -109,37 +109,58 @@ namespace Task2
         /// <param name="tag">Key word.</param>
         /// <returns>List of book.</returns>
 
-        public List<Book> FindByTag(Predicate<Book> tag) => BookList.FindAll(tag);
+        public IEnumerable<Book> FindByTag(Predicate<Book> tag) => BookList.FindAll(tag).ToList();
 
         /// <summary>
         /// Sort book library by tag name.
         /// </summary>
 
-        public void SortsBooksByTag() => BookList.Sort();
+        public void SortsBooks() => BookList.Sort();
 
         /// <summary>
         /// Sort book library by tag name.
         /// </summary>
         /// <param name="keySelector">Key selector.</param>
 
-        public void SortsBooksByTag(Func<Book, object> keySelector)
-        {
-            BookList = BookList.OrderBy(keySelector).ToList();
-        }
+        public void SortsBooksByTag(Comparison<Book> keySelector) => BookList.Sort(keySelector);
 
         /// <summary>
-        /// Save from library to file
+        /// Save from library to file.
         /// </summary>
+        /// <param name="address">String address file.</param>
 
-        public void SaveFromBookListToFile() => BookListStorage.WriteBooks(BookList);
+        public void SaveFromBookListToFile(string address)
+        {
+            string addr = address;
+            if (IsNullOrEmpty(address))
+            {
+                addr = ConfigurationManager.AppSettings["address"];
+            }
+
+            OperationWithFile operationWithFile =
+                        new OperationWithFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, addr));
+
+            operationWithFile.WriteBooks(BookList);
+        }
 
         /// <summary>
         /// Load from library.
         /// </summary>
-        /// <returns>Book list</returns>
+        /// <param name="address">String address file.</param>
+        /// <returns>Book list.</returns>
+        public IEnumerable<Book> LoadFromFileToBookList(string address)
+        {
+            string addr = address;
+            if (IsNullOrEmpty(address))
+            {
+                addr = ConfigurationManager.AppSettings["address"];
+            }
 
-        public List<Book> LoadFromFileToBookList() => BookListStorage.ReadBooks();
-        
+            var operationWithFile = new OperationWithFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, addr));
+            return operationWithFile.ReadBooks();
+
+        }
+
         #endregion
 
     }

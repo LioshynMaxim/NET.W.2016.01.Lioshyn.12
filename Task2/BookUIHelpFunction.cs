@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Configuration;
 using NLog;
 
 namespace Task2
@@ -11,10 +12,11 @@ namespace Task2
 
         public static OperationWithFile WithFile { get; set; }
         public BookListService ListService { get; }
-        public static Logger ServiceBookLogger { get; } = LogManager.GetCurrentClassLogger(); 
-
+        public static Logger ServiceBookLogger { get; } = LogManager.GetCurrentClassLogger();
+        private string Address { get; }
+       
         #endregion
-        
+
         /// <summary>
         /// .ctor
         /// </summary>
@@ -23,8 +25,10 @@ namespace Task2
 
         public BookUiHelpFunction(OperationWithFile operationWithFile, BookListService bookListService)
         {
+            Address = ConfigurationManager.AppSettings["address"];
+
             if (operationWithFile == null)
-                operationWithFile = new OperationWithFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "test.txt"));
+                operationWithFile = new OperationWithFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Address));
 
 
             if (bookListService == null)

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using static Task2.BookUiHelpFunction;
-using NLog;
 
 namespace Task2
 {
@@ -10,7 +10,7 @@ namespace Task2
     {
         static void Main(string[] args)
         {
-            OperationWithFile operationWithFile = new OperationWithFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "test.txt"));
+            OperationWithFile operationWithFile = new OperationWithFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ConfigurationManager.AppSettings["address"]));
             BookListService bookListService = new BookListService(operationWithFile);
 
             Book book1 = new Book("Есенин", "Первая книга", "Москва", 1955, 150);
@@ -25,11 +25,7 @@ namespace Task2
             bookUiHelpFunction.AddBook(book2);
 
 
-            bookListService.SortsBooksByTag(book => book.Title);
-            ServiceBookLogger.Info("Sorting internal list books by Title");
-            DisplayBook(bookListService.BookList);
-
-            List<Book> resultFind = bookListService.FindByTag(book => book.NumberOfPages == 189);
+            List<Book> resultFind = (List<Book>) bookListService.FindByTag(book => book.NumberOfPages == 150);
             ServiceBookLogger.Info("Find list book where number of page = 189");
             DisplayBook(resultFind);
 
